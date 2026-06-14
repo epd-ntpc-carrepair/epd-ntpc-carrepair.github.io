@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<h1 style="text-align:center;">新北市政府環境保護局<br>清潔隊車輛機具維修費用分攤處理計算表</h1>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f9f9f9;
+}
+h1, h2, h3 {
+    color: #2d5ca4;
+}
+.table-container {
+    overflow-x: auto;
+    margin-top: 20px;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 600px;
+}
+th, td {
+    border: 1px solid #666;
+    padding: 8px;
+    text-align: center;
+}
+th {
+    background-color: #f0f6ff;
+}
+th small {
+    display: block;
+    font-size: 0.85em;
+    color: #555;
+    margin-top: 2px;
+}
+input[type="number"] {
+    width: 100%;
+    box-sizing: border-box;
+}
+.warning {
+    color: red;
+    font-weight: bold;
+}
+button {
+    padding: 8px 20px;
+    font-size: 16px;
+    margin-top: 15px;
+    background-color: #2d5ca4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+}
+@media print {
+    button { display: none; }
+    body { background: white; }
+}
+</style>
+</head>
+
+<body>
+
+
+<!-- 維修金額 -->
+<div class="table-container">
+<table>
+<tr>
+    <th>維修費用總額（元）</th>
+    <td><input type="number" id="amount" min="0"></td>
+</tr>
+</table>
+</div>
+
+<!-- 考績 -->
+<h3>一、近五年年終考績</h3>
+<div class="table-container">
+<table>
+<tr>
+    <th>甲等<small>(-1%)</small></th>
+    <th>乙等<small>(+1%)</small></th>
+    <th>丙等<small>(+3%)</small></th>
+    <th>年數合計</th>
+    <th>考績調整小計</th>
+</tr>
+<tr>
+    <td><input type="number" id="a" value="0" min="0"></td>
+    <td><input type="number" id="b" value="0" min="0"></td>
+    <td><input type="number" id="c" value="0" min="0"></td>
+    <td id="yearSum">0</td>
+    <td id="gradeRate">0%</td>
+</tr>
+</table>
+<p id="yearWarn" class="warning"></p>
+</div>
+
+<!-- 獎懲 -->
+<h3>二、最近二年獎懲</h3>
+<div class="table-container">
+<table>
+<tr>
+    <th>嘉獎<small>(-1%)</small></th>
+    <th>申誡<small>(+1%)</small></th>
+    <th>記功<small>(-3%)</small></th>
+    <th>記過<small>(+3%)</small></th>
+    <th>大功<small>(-6%)</small></th>
+    <th>大過<small>(+6%)</small></th>
+    <th>獎懲調整小計</th>
+</tr>
+<tr>
+    <td><input type="number" id="d" value="0" min="0"></td>
+    <td><input type="number" id="e" value="0" min="0"></td>
+    <td><input type="number" id="f" value="0" min="0"></td>
+    <td><input type="number" id="g" value="0" min="0"></td>
+    <td><input type="number" id="h" value="0" min="0"></td>
+    <td><input type="number" id="i" value="0" min="0"></td>
+    <td id="rewardRate">0%</td>
+</tr>
+</table>
+</div>
+
+<button onclick="calculate()">計算</button>
+
+<!-- 結果 -->
+<div class="table-container">
+<table id="resultTable" style="display:none;">
+<tr>
+    <th>基本分攤金額（元）</th>
+    <th>調整比例（上限 ±15%）</th>
+    <th>調整後分攤金額（元）</th>
+</tr>
+<tr>
+    <td id="baseAmount"></td>
+    <td id="totalRate"></td>
+    <td id="finalAmount"></td>
+</tr>
+</table>
+</div>
+
+<h3>說明</h3>
+<ol>
+<li>維修費用總額在新臺幣五萬元（含）以下者，分攤百分之二十。</li>
+<li>維修費用總額超過五萬元至十五萬元（含）以下者，除五萬元部分依前款規定辦理外，餘額分攤百分之十五。</li>
+<li>維修費用總額超過十五萬元者，除十五萬元部分依前二款規定辦理外，餘額分攤百分之十。</li>
+<li>
+    由區隊提出相關佐證資料或說明，經簽奉核准後，
+    得依責任人近五年考績及最近二年獎懲情形，
+    就其分攤金額酌予減免或加重；
+    其增減幅度合計不得超過原分攤金額之百分之十五。
+</li>
+</ol>
+
+<!-- 核章 -->
+<table>
+<tr>
+    <th>區隊承辦單位</th>
+    <th>區隊會辦單位</th>
+    <th>隊長</th>
+</tr>
+<tr style="height:50px;">
+    <td></td>
+    <td></td>
+    <td></td>
+</tr>
+</table>
+
+<script>
+function calculate() {
+    const amt = Number(amount.value);
+    if (!amt || amt < 0) {
+        alert('請輸入正確的維修金額');
+        return;
+    }
+
+    // 基本分攤金額
+    let base = Math.min(amt, 50000) * 0.2;
+    if (amt > 50000) base += Math.min(amt - 50000, 100000) * 0.15;
+    if (amt > 150000) base += (amt - 150000) * 0.1;
+
+    // 考績
+    const yA = +a.value, yB = +b.value, yC = +c.value;
+    const yearTotal = yA + yB + yC;
+    yearSum.innerText = yearTotal;
+
+    let grade = yA * -0.01 + yB * 0.01 + yC * 0.03;
+    gradeRate.innerText = (grade * 100).toFixed(1) + '%';
+
+    yearWarn.innerText = (yearTotal !== 5)
+        ? '⚠ 近五年考績合計應為 5 年'
+        : '';
+
+    // 獎懲
+    let reward =
+        d.value * -0.01 + e.value * 0.01 +
+        f.value * -0.03 + g.value * 0.03 +
+        h.value * -0.06 + i.value * 0.06;
+    rewardRate.innerText = (reward * 100).toFixed(1) + '%';
+
+    // 合計（±15%）
+    let total = grade + reward;
+    total = Math.max(Math.min(total, 0.15), -0.15);
+
+     // 1. 先計算出調整後的最終金額
+    let finalAmt = base * (1 + total);
+
+    // 2. 渲染結果
+    // 基本分攤金額：保留 2 位小數，讓長官看清未進位的原始數字（例如：1017.60）
+    baseAmount.innerText = base.toFixed(2); 
+    
+    totalRate.innerText = (total >= 0 ? '+' : '') + (total * 100).toFixed(1) + '%';
+    
+    // 最終分攤金額：直接四捨五入成整數（公家機關收據通常不收小數點）
+    finalAmount.innerText = Math.round(finalAmt); 
+    
+    resultTable.style.display = '';
+}
+</script>
+
+</body>
+</html>
+
+
