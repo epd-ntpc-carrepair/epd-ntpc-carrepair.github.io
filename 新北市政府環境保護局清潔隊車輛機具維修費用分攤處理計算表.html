@@ -206,12 +206,12 @@ function calculate() {
     let finalAmt = base * (1 + total);
 
     // 2. 渲染結果
-    // 基本分攤金額：保留 2 位小數，讓長官看清未進位的原始數字（例如：1017.60）
+    // 基本分攤金額：保留 2 位小數（例：1017.60）
     baseAmount.innerText = base.toFixed(2); 
     
     totalRate.innerText = (total >= 0 ? '+' : '') + (total * 100).toFixed(1) + '%';
     
-    // 最終分攤金額：直接四捨五入成整數（公家機關收據通常不收小數點）
+    // 最終分攤金額：直接四捨五入成整數
     finalAmount.innerText = Math.round(finalAmt); 
     
     resultTable.style.display = '';
