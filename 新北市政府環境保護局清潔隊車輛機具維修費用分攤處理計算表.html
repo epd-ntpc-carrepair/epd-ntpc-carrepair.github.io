@@ -93,7 +93,6 @@ button {
     <td id="gradeRate">0%</td>
 </tr>
 </table>
-<p id="yearWarn" class="warning"></p>
 </div>
 
 <!-- 獎懲 -->
@@ -187,9 +186,6 @@ function calculate() {
     let grade = yA * -0.01 + yB * 0.01 + yC * 0.03;
     gradeRate.innerText = (grade * 100).toFixed(1) + '%';
 
-    yearWarn.innerText = (yearTotal !== 5)
-        ? '⚠ 近五年考績合計應為 5 年'
-        : '';
 
     // 獎懲
     let reward =
@@ -220,5 +216,4 @@ function calculate() {
 
 </body>
 </html>
-
 
